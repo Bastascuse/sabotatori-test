@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test 9 Sabotatori - Basta Scuse</title>
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '470581236758398');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=470581236758398&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  background: #2b2a28;
+  background-image:
+    linear-gradient(160deg, #322f2a 0%, #28262a 55%, #221f24 100%),
+    radial-gradient(circle at 15% 10%, rgba(212,169,66,0.14), transparent 45%),
+    radial-gradient(circle at 85% 95%, rgba(212,169,66,0.10), transparent 50%);
+  color: #f0f0f0;
+  min-height: 100vh;
+}
+.container { max-width: 680px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+.brand { text-align: center; margin-bottom: 2rem; font-size: 32px; font-weight: 800; letter-spacing: 0.5px; }
+.brand span { color: #d4a942; }
+.progress-bar { height: 5px; background: #1f1f1f; border-radius: 3px; margin-bottom: 1.75rem; overflow: hidden; }
+.progress-fill { height: 100%; background: #d4a942; border-radius: 3px; transition: width 0.3s; }
+.q-counter { font-size: 15px; color: #d4a942; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 0.75rem; }
+.q-text { font-size: 22px; font-weight: 700; line-height: 1.5; margin-bottom: 2rem; color: #fff; }
+.likert-scale { display: flex; flex-direction: column; gap: 12px; }
+.likert-option { display: flex; align-items: center; gap: 16px; padding: 18px 20px; border: 1px solid #262626; border-radius: 10px; cursor: pointer; background: #141414; transition: all 0.15s; }
+.likert-option:hover { border-color: #d4a942; background: #1f1a08; }
+.likert-option.selected { border-color: #d4a942; background: #1f1a08; }
+.likert-circle { width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid #3a3a3a; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: #888; flex-shrink: 0; }
+.likert-option.selected .likert-circle { background: #d4a942; border-color: #d4a942; color: #0a0a0a; }
+.likert-label { font-size: 17px; color: #e8e8e8; line-height: 1.4; }
+.nav { display: flex; justify-content: space-between; margin-top: 1.75rem; }
+.btn { padding: 16px 30px; border-radius: 8px; border: 1px solid #333; background: #161616; color: #ddd; font-size: 18px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.btn:hover { background: #1f1f1f; }
+.btn.primary { background: #d4a942; border-color: #d4a942; color: #0a0a0a; font-weight: 800; }
+.btn.primary:hover { background: #e3ba56; }
+.btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.card { background: #141414; border-radius: 16px; padding: 2.25rem; border: 1px solid #232323; }
+.card h2 { font-size: 28px; font-weight: 800; margin-bottom: 0.5rem; color: #fff; }
+.card p { font-size: 18px; color: #aaa; margin-bottom: 1.5rem; line-height: 1.6; }
+.field { margin-bottom: 1rem; }
+.field label { display: block; font-size: 16px; font-weight: 700; color: #d4a942; margin-bottom: 6px; }
+.field input { width: 100%; padding: 14px; border: 1px solid #333; border-radius: 8px; font-size: 17px; font-family: inherit; background: #0d0d0d; color: #fff; }
+.field input::placeholder { color: #666; }
+.field input:focus { outline: none; border-color: #d4a942; }
+.submit-btn { width: 100%; padding: 18px; background: #d4a942; color: #0a0a0a; border: none; border-radius: 8px; font-size: 19px; font-weight: 800; cursor: pointer; font-family: inherit; }
+.submit-btn:hover { background: #e3ba56; }
+.loading { text-align: center; padding: 3rem; }
+.intro h1 { font-size: 34px; font-weight: 800; margin-bottom: 1rem; color: #fff; line-height: 1.3; }
+.intro p { font-size: 18px; color: #aaa; line-height: 1.7; margin-bottom: 1rem; }
+@media(max-width:600px){
+  .container{padding:1.5rem 1rem;}
+  .q-text{font-size:19px;}
+  .likert-label{font-size:15px;}
+  .brand{font-size:26px;}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="brand">BASTA <span>SCUSE</span></div>
+
+<!-- INTRO -->
+<div id="intro" class="card">
+  <h1>Scopri il tuo sabotatore dominante</h1>
+  <p>18 affermazioni. Per ognuna indica quanto ti descrive nella realtà — non come vorresti essere.</p>
+  <p style="font-size:16px;color:#999;">Circa 3 minuti. Gratuito.</p>
+  <div style="margin-top:1.5rem">
+    <button class="submit-btn" onclick="startTest()">Inizia il test &gt;&gt;</button>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz" style="display:none">
+  <div class="progress-bar"><div class="progress-fill" id="prog"></div></div>
+  <div class="q-counter" id="qcount"></div>
+  <div class="q-text" id="qtext"></div>
+  <div class="likert-scale" id="opts"></div>
+  <div class="nav">
+    <button class="btn" id="btnPrev" onclick="prev()">&lt;&lt; Indietro</button>
+    <button class="btn primary" id="btnNext" onclick="next()" disabled>Avanti &gt;&gt;</button>
+  </div>
+</div>
+
+<!-- FORM -->
+<div id="formbox" style="display:none" class="card">
+  <h2>Ottimo! Hai completato il test.</h2>
+  <p>Inserisci i tuoi dati per ricevere il tuo sabotatore dominante via email, con 2 esercizi NLP pratici e i primi 3 video gratuiti del portale Basta Scuse.</p>
+  <div class="field"><label>Nome *</label><input type="text" id="f_nome" placeholder="Il tuo nome"></div>
+  <div class="field"><label>Email *</label><input type="email" id="f_email" placeholder="La tua email"></div>
+  <div class="field"><label>Telefono *</label><input type="tel" id="f_tel" placeholder="Il tuo numero di telefono"></div>
+  <button class="submit-btn" onclick="submitForm()">Ricevi il mio risultato &gt;&gt;</button>
+  <p style="font-size:14px;color:#aaa;margin-top:1rem;text-align:center;">Nessuno spam. Puoi cancellarti in qualsiasi momento.</p>
+</div>
+
+<!-- LOADING -->
+<div id="loading" style="display:none" class="card loading">
+  <p style="font-size:26px;font-weight:800;color:#fff;margin-bottom:1rem;">Analisi completata.</p>
+  <p style="font-size:19px;color:#aaa;line-height:1.8;margin-bottom:1rem;">Abbiamo identificato il tuo sabotatore dominante.</p>
+  <p style="font-size:19px;color:#aaa;line-height:1.8;">Nella pagina successiva scopri chi e' e ricevi i primi 3 video gratuiti del portale Basta Scuse — contenuti esclusivi normalmente riservati solo ai miei clienti.</p>
+  <button class="submit-btn" style="margin-top:1.5rem" onclick="goToKartra()">Scopri il tuo sabotatore &gt;&gt;</button>
+</div>
+
+</div>
+
+<script>
+var PAGES = {
+  'P':  'https://zeroscuse.kartra.com/page/8jJ2059',
+  'PE': 'https://zeroscuse.kartra.com/page/p3e2058',
+  'C':  'https://zeroscuse.kartra.com/page/RfW2057',
+  'CO': 'https://zeroscuse.kartra.com/page/9Zs2062',
+  'V':  'https://zeroscuse.kartra.com/page/dBc2063',
+  'D':  'https://zeroscuse.kartra.com/page/c8E2060',
+  'I':  'https://zeroscuse.kartra.com/page/sLU2061',
+  'IA': 'https://zeroscuse.kartra.com/page/nSd2064',
+  'K':  'https://zeroscuse.kartra.com/page/g1L2065'
+};
+
+var LABELS = [
+  'Per niente vero',
+  'Poco vero',
+  'Abbastanza vero',
+  'Molto vero',
+  'Assolutamente vero'
+];
+
+// 18 affermazioni: 2 per ogni sabotatore (mischiato)
+var QS = [
+  {t:'Rimando spesso le decisioni importanti, aspettando il momento giusto che non arriva mai.', s:'P'},
+  {t:'Faccio fatica a dire di no anche quando so che non ho tempo o voglia.', s:'C'},
+  {t:'Inizio molti progetti con entusiasmo, ma ne porto a termine pochi.', s:'D'},
+  {t:'Prima di consegnare un lavoro, lo rivedo decine di volte perche\' non mi sembra mai abbastanza buono.', s:'PE'},
+  {t:'Sono quasi sempre occupato e di corsa, ma a fine giornata mi rendo conto di non aver fatto le cose davvero importanti.', s:'IA'},
+  {t:'Se non supervisiono io un compito, sono quasi certo che qualcosa andra\' storto.', s:'CO'},
+  {t:'Faccio un ottimo lavoro, ma raramente mi metto in mostra o chiedo il riconoscimento che merito.', s:'I'},
+  {t:'Preferisco restare su quello che conosco piuttosto che rischiare con qualcosa di nuovo.', s:'K'},
+  {t:'Quando qualcosa non va, la prima cosa che penso e\' chi o cosa ha causato il problema.', s:'V'},
+  {t:'So esattamente cosa dovrei fare per raggiungere i miei obiettivi, ma continuo a non farlo.', s:'P'},
+  {t:'Mi preoccupo molto di cosa pensano gli altri di me e cerco sempre di accontentarli.', s:'C'},
+  {t:'La mia attenzione si sposta facilmente da un\'idea all\'altra, rendendo difficile il focus su una sola cosa.', s:'D'},
+  {t:'Ho difficolta\' a chiudere un progetto perche\' c\'e\' sempre qualcosa da migliorare.', s:'PE'},
+  {t:'Riempio la mia agenda di attivita\' e riunioni, ma spesso le priorita\' vere rimangono indietro.', s:'IA'},
+  {t:'Delegare compiti agli altri mi crea ansia: temo che non vengano fatti come li farei io.', s:'CO'},
+  {t:'Evito di promuovere me stesso o le mie capacita\', anche quando sarebbe utile farlo.', s:'I'},
+  {t:'Il cambiamento mi spaventa: preferisco la stabilita\' anche quando so che qualcosa dovrebbe cambiare.', s:'K'},
+  {t:'Quando le cose non vanno come vorrei, tendo a trovare ragioni esterne per spiegarlo.', s:'V'}
+];
+
+var cur = 0, answers = [], dominante = '';
+
+function startTest() {
+  document.getElementById('intro').style.display = 'none';
+  document.getElementById('quiz').style.display = 'block';
+  render();
+}
+
+function render() {
+  var total = QS.length;
+  document.getElementById('prog').style.width = ((cur / total) * 100) + '%';
+  document.getElementById('qcount').textContent = 'Affermazione ' + (cur + 1) + ' di ' + total;
+  document.getElementById('qtext').textContent = QS[cur].t;
+  var oDiv = document.getElementById('opts');
+  oDiv.innerHTML = '';
+  for (var i = 0; i < 5; i++) {
+    var sel = answers[cur] === i;
+    var d = document.createElement('div');
+    d.className = 'likert-option' + (sel ? ' selected' : '');
+    d.innerHTML = '<div class="likert-circle">' + (i + 1) + '</div><div class="likert-label">' + LABELS[i] + '</div>';
+    d.onclick = (function(idx) { return function() { select(idx); }; })(i);
+    oDiv.appendChild(d);
+  }
+  document.getElementById('btnPrev').disabled = cur === 0;
+  var btn = document.getElementById('btnNext');
+  btn.disabled = answers[cur] === undefined;
+  btn.textContent = cur === total - 1 ? 'Vedi risultato >>' : 'Avanti >>';
+}
+
+function select(i) {
+  answers[cur] = i;
+  render();
+}
+
+function next() {
+  if (answers[cur] === undefined) return;
+  if (cur === QS.length - 1) { showForm(); return; }
+  cur++;
+  render();
+}
+
+function prev() {
+  if (cur > 0) { cur--; render(); }
+}
+
+function calcDominante() {
+  var scores = { P:0, PE:0, C:0, CO:0, V:0, D:0, I:0, IA:0, K:0 };
+  QS.forEach(function(q, i) {
+    if (answers[i] !== undefined) {
+      scores[q.s] += (answers[i] + 1); // 1-5 points per answer
+    }
+  });
+  var winner = Object.keys(scores).reduce(function(a, b) {
+    return scores[a] > scores[b] ? a : b;
+  });
+  return winner;
+}
+
+function showForm() {
+  dominante = calcDominante();
+  document.getElementById('quiz').style.display = 'none';
+  document.getElementById('loading').style.display = 'block';
+}
+
+function submitForm() {
+  if (typeof fbq === 'function') { fbq('track', 'Lead'); }
+  goToKartra();
+}
+
+function goToKartra() {
+  window.top.location.href = PAGES[dominante];
+}
+</script>
+</body>
+</html>
