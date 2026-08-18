@@ -294,17 +294,66 @@ function submitForm() {
   btn.disabled = true;
   btn.textContent = 'Invio in corso...';
 
-  try {
-    if (typeof fbq === 'function') { fbq('track', 'Lead'); }
-    // Il risultato (pagina Kartra con archetipo, immagine e frase) si sblocca
-    // solo se questo invio va a buon fine: nessun redirect prima di qui.
+  if (typeof fbq === 'function') { fbq('track', 'Lead'); }
+
+  // Invio reale del lead a Kartra (endpoint add_lead dell'optin usato dalle
+  // pagine di destinazione). Il redirect avviene SOLO dopo la conferma
+  // dell'invio (evento "load" dell'iframe nascosto), non prima/in parallelo.
+  inviaLeadAKartra({
+    first_name: nome,
+    last_name: cognome,
+    phone: tel,
+    email: email,
+    gdpr_communications: document.getElementById('f_info').checked ? '1' : '0',
+    gdpr_terms: gdpr ? '1' : '0',
+    aaddress_url: window.location.href
+  }, function () {
     goToKartra();
-  } catch (e) {
-    btn.disabled = false;
-    btn.textContent = 'RICEVI IL REPORT COMPLETO!';
-    errEl.textContent = 'Si è verificato un errore durante l\'invio. Riprova.';
-    errEl.style.display = 'block';
+  });
+}
+
+function inviaLeadAKartra(dati, onDone) {
+  var KARTRA_OPTIN_URL = 'https://app.kartra.com/process/add_lead/e9L2Vy7DYaoQ';
+  var doneCalled = false;
+
+  function finish() {
+    if (doneCalled) return;
+    doneCalled = true;
+    onDone();
   }
+
+  var iframeName = 'kartraLeadFrame_' + Date.now();
+  var iframe = document.createElement('iframe');
+  iframe.name = iframeName;
+  iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+
+  iframe.addEventListener('load', function onLoad() {
+    iframe.removeEventListener('load', onLoad);
+    finish();
+  });
+
+  var form = document.createElement('form');
+  form.action = KARTRA_OPTIN_URL;
+  form.method = 'POST';
+  form.target = iframeName;
+  form.style.display = 'none';
+
+  Object.keys(dati).forEach(function (key) {
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = key;
+    input.value = dati[key];
+    form.appendChild(input);
+  });
+
+  document.body.appendChild(form);
+  form.submit();
+
+  // Fallback di sicurezza: se per qualsiasi motivo l'evento "load"
+  // dell'iframe non dovesse arrivare (rete lenta, blocchi vari), non
+  // blocchiamo l'utente all'infinito: procediamo comunque dopo 4s.
+  setTimeout(finish, 4000);
 }
 
 function goToKartra() {
