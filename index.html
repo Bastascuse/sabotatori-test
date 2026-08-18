@@ -64,6 +64,24 @@ body {
 .submit-btn { width: 100%; padding: 18px; background: #d4a942; color: #0a0a0a; border: none; border-radius: 8px; font-size: 19px; font-weight: 800; cursor: pointer; font-family: inherit; }
 .submit-btn:hover { background: #e3ba56; }
 .loading { text-align: center; padding: 3rem; }
+/* Blocco "Test completato!" replicato dalle pagine Kartra di destinazione */
+.kf-card { background: rgba(25,25,25,0.9); border-radius: 12px; padding: 40px; margin-top: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.45); text-align: left; }
+.kf-title { color: #f0c14b; font-size: 40px; font-weight: 800; text-align: center; line-height: 1.15; margin-bottom: 1.25rem; }
+.kf-subtitle { color: #f0f0f0; font-size: 18px; text-align: center; margin-bottom: 1.75rem; }
+.kf-field { position: relative; margin-bottom: 1rem; }
+.kf-field input { width: 100%; padding: 16px 44px 16px 16px; border: 1px solid #333; border-radius: 8px; font-size: 17px; font-family: inherit; background: #1a1a1a; color: #fff; }
+.kf-field input::placeholder { color: #888; }
+.kf-field input:focus { outline: none; border-color: #f0c14b; }
+.kf-field .kf-icon { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: #888; font-size: 18px; pointer-events: none; }
+.kf-field .kf-required { position: absolute; right: -2px; top: -6px; color: #e05c5c; font-size: 15px; }
+.kf-note { font-size: 14px; color: #ccc; font-style: italic; margin: -0.5rem 0 1rem; line-height: 1.5; }
+.kf-consent { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 0.75rem; font-size: 15px; color: #eee; }
+.kf-consent input { margin-top: 3px; flex-shrink: 0; }
+.kf-consent .kf-info { color: #999; font-size: 13px; border: 1px solid #666; border-radius: 50%; width: 15px; height: 15px; display: inline-flex; align-items: center; justify-content: center; margin-left: 4px; }
+.kf-submit { width: 100%; padding: 18px; background: #f0c14b; color: #0a0a0a; border: none; border-radius: 8px; font-size: 17px; font-weight: 800; letter-spacing: 0.3px; cursor: pointer; font-family: inherit; text-transform: uppercase; margin-top: 0.5rem; }
+.kf-submit:hover { background: #f7d377; }
+.kf-submit:disabled { background: #3a3a3a; color: #888; cursor: not-allowed; }
+.kf-error { color: #e05c5c; font-size: 15px; margin: 0.5rem 0 0; display: none; }
 .intro h1 { font-size: 34px; font-weight: 800; margin-bottom: 1rem; color: #fff; line-height: 1.3; }
 .intro p { font-size: 18px; color: #aaa; line-height: 1.7; margin-bottom: 1rem; }
 @media(max-width:600px){
@@ -101,23 +119,46 @@ body {
   </div>
 </div>
 
-<!-- FORM -->
-<div id="formbox" style="display:none" class="card">
-  <h2>Ottimo! Hai completato il test.</h2>
-  <p>Inserisci i tuoi dati per ricevere il tuo sabotatore dominante via email, con 2 esercizi NLP pratici e i primi 3 video gratuiti del portale Basta Scuse.</p>
-  <div class="field"><label>Nome *</label><input type="text" id="f_nome" placeholder="Il tuo nome"></div>
-  <div class="field"><label>Email *</label><input type="email" id="f_email" placeholder="La tua email"></div>
-  <div class="field"><label>Telefono *</label><input type="tel" id="f_tel" placeholder="Il tuo numero di telefono"></div>
-  <button class="submit-btn" onclick="submitForm()">Ricevi il mio risultato &gt;&gt;</button>
-  <p style="font-size:14px;color:#aaa;margin-top:1rem;text-align:center;">Nessuno spam. Puoi cancellarti in qualsiasi momento.</p>
-</div>
+<!-- Schermata "Test completato!" (identica alle pagine Kartra di destinazione) -->
+<div id="loading" style="display:none">
+  <div class="kf-card">
+    <div class="kf-title">Test completato!</div>
+    <div class="kf-subtitle">Inserisci i tuoi dati per ricevere il risultato via WhatsApp!</div>
 
-<!-- LOADING -->
-<div id="loading" style="display:none" class="card loading">
-  <p style="font-size:26px;font-weight:800;color:#fff;margin-bottom:1rem;">Analisi completata.</p>
-  <p style="font-size:19px;color:#aaa;line-height:1.8;margin-bottom:1rem;">Abbiamo identificato il tuo sabotatore dominante.</p>
-  <p style="font-size:19px;color:#aaa;line-height:1.8;">Nella pagina successiva scopri chi è, come si comporta, e qual è il primo passo per iniziare a fermarlo.</p>
-  <button class="submit-btn" style="margin-top:1.5rem" onclick="goToKartra()">Scopri il tuo sabotatore &gt;&gt;</button>
+    <div class="kf-field">
+      <input type="text" id="f_nome" placeholder="Nome">
+      <span class="kf-icon">&#128100;</span>
+      <span class="kf-required">*</span>
+    </div>
+    <div class="kf-field">
+      <input type="text" id="f_cognome" placeholder="Cognome">
+      <span class="kf-icon">&#128100;</span>
+      <span class="kf-required">*</span>
+    </div>
+    <div class="kf-field">
+      <input type="tel" id="f_tel" placeholder="Telefono">
+      <span class="kf-icon">&#128241;</span>
+      <span class="kf-required">*</span>
+    </div>
+    <p class="kf-note">Il tuo risultato ti arriva via WhatsApp — controlla di aver scritto il numero giusto</p>
+    <div class="kf-field">
+      <input type="email" id="f_email" placeholder="Email...">
+      <span class="kf-icon">&#9993;</span>
+      <span class="kf-required">*</span>
+    </div>
+
+    <label class="kf-consent">
+      <input type="checkbox" id="f_info">
+      Voglio ricevere ulteriori informazioni
+    </label>
+    <label class="kf-consent">
+      <input type="checkbox" id="f_gdpr">
+      Accetto i termini e le condizioni di GDPR <span class="kf-info">i</span>
+    </label>
+
+    <p id="formError" class="kf-error"></p>
+    <button class="kf-submit" id="submitBtn" onclick="submitForm()">RICEVI IL REPORT COMPLETO!</button>
+  </div>
 </div>
 
 </div>
@@ -201,7 +242,7 @@ function select(i) {
 
 function next() {
   if (answers[cur] === undefined) return;
-  if (cur === QS.length - 1) { showForm(); return; }
+  if (cur === QS.length - 1) { showLoading(); return; }
   cur++;
   render();
 }
@@ -223,15 +264,47 @@ function calcDominante() {
   return winner;
 }
 
-function showForm() {
+function showLoading() {
   dominante = calcDominante();
   document.getElementById('quiz').style.display = 'none';
   document.getElementById('loading').style.display = 'block';
 }
 
 function submitForm() {
-  if (typeof fbq === 'function') { fbq('track', 'Lead'); }
-  goToKartra();
+  var nome = document.getElementById('f_nome').value.trim();
+  var cognome = document.getElementById('f_cognome').value.trim();
+  var tel = document.getElementById('f_tel').value.trim();
+  var email = document.getElementById('f_email').value.trim();
+  var gdpr = document.getElementById('f_gdpr').checked;
+  var errEl = document.getElementById('formError');
+  var btn = document.getElementById('submitBtn');
+
+  if (!nome || !cognome || !tel || !email) {
+    errEl.textContent = 'Compila tutti i campi obbligatori (Nome, Cognome, Telefono, Email) per vedere il tuo risultato.';
+    errEl.style.display = 'block';
+    return;
+  }
+  if (!gdpr) {
+    errEl.textContent = 'Devi accettare i termini e le condizioni GDPR per procedere.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  errEl.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = 'Invio in corso...';
+
+  try {
+    if (typeof fbq === 'function') { fbq('track', 'Lead'); }
+    // Il risultato (pagina Kartra con archetipo, immagine e frase) si sblocca
+    // solo se questo invio va a buon fine: nessun redirect prima di qui.
+    goToKartra();
+  } catch (e) {
+    btn.disabled = false;
+    btn.textContent = 'RICEVI IL REPORT COMPLETO!';
+    errEl.textContent = 'Si è verificato un errore durante l\'invio. Riprova.';
+    errEl.style.display = 'block';
+  }
 }
 
 function goToKartra() {
