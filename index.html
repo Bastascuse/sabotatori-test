@@ -82,6 +82,9 @@ body {
 .kf-submit:hover { background: #f7d377; }
 .kf-submit:disabled { background: #3a3a3a; color: #888; cursor: not-allowed; }
 .kf-error { color: #e05c5c; font-size: 15px; margin: 0.5rem 0 0; display: none; }
+.kf-embed-host { min-height: 480px; }
+.kf-embed-host iframe { width: 100%; border: none; display: block; }
+.kf-embed-loading { color: #ccc; text-align: center; padding: 2rem 0; font-size: 15px; }
 .intro h1 { font-size: 34px; font-weight: 800; margin-bottom: 1rem; color: #fff; line-height: 1.3; }
 .intro p { font-size: 18px; color: #aaa; line-height: 1.7; margin-bottom: 1rem; }
 @media(max-width:600px){
@@ -124,40 +127,14 @@ body {
   <div class="kf-card">
     <div class="kf-title">Test completato!</div>
     <div class="kf-subtitle">Inserisci i tuoi dati per ricevere il risultato via WhatsApp!</div>
-
-    <div class="kf-field">
-      <input type="text" id="f_nome" placeholder="Nome">
-      <span class="kf-icon">&#128100;</span>
-      <span class="kf-required">*</span>
-    </div>
-    <div class="kf-field">
-      <input type="text" id="f_cognome" placeholder="Cognome">
-      <span class="kf-icon">&#128100;</span>
-      <span class="kf-required">*</span>
-    </div>
-    <div class="kf-field">
-      <input type="tel" id="f_tel" placeholder="Telefono">
-      <span class="kf-icon">&#128241;</span>
-      <span class="kf-required">*</span>
-    </div>
     <p class="kf-note">Il tuo risultato ti arriva via WhatsApp — controlla di aver scritto il numero giusto</p>
-    <div class="kf-field">
-      <input type="email" id="f_email" placeholder="Email...">
-      <span class="kf-icon">&#9993;</span>
-      <span class="kf-required">*</span>
-    </div>
 
-    <label class="kf-consent">
-      <input type="checkbox" id="f_info">
-      Voglio ricevere ulteriori informazioni
-    </label>
-    <label class="kf-consent">
-      <input type="checkbox" id="f_gdpr">
-      Accetto i termini e le condizioni di GDPR <span class="kf-info">i</span>
-    </label>
+    <div id="kartraEmbedHost" class="kf-embed-host"></div>
 
     <p id="formError" class="kf-error"></p>
-    <button class="kf-submit" id="submitBtn" onclick="submitForm()">RICEVI IL REPORT COMPLETO!</button>
+    <p id="fallbackMsg" class="kf-note" style="display:none">
+      Hai già inviato i tuoi dati? <a href="#" id="fallbackLink" onclick="goToKartra(); return false;" style="color:#f0c14b;">Clicca qui per vedere il risultato</a>.
+    </p>
   </div>
 </div>
 
@@ -264,96 +241,126 @@ function calcDominante() {
   return winner;
 }
 
+// Mappa sabotatore -> optin Kartra reale (recuperato dalle 9 pagine di
+// destinazione live: stesso meccanismo che raccoglie i lead lì, usato qui
+// dentro il quiz). "hash" e' la classe univoca del contenitore richiesta
+// dall'embed ufficiale Kartra per quell'optin specifico.
+var KARTRA_OPTIN = {
+  'P':  { optinId: 'e9L2Vy7DYaoQ', hash: 'fccb60fb512d13df5083790d64c4d5dd' },
+  'PE': { optinId: 'KXOdWkTxUnoQ', hash: '2421fcb1263b9530df88f7f002e78ea5' },
+  'C':  { optinId: 'vbKdIqhH56lF', hash: '67f7fb873eaf29526a11a9b7ac33bfac' },
+  'CO': { optinId: 'DHc2JN5OwslF', hash: 'a8abb4bb284b5b27aa7cb790dc20f80b' },
+  'V':  { optinId: 'VE1JMOjqyt9c', hash: '15d4e891d784977cacbfcbb00c48f133' },
+  'D':  { optinId: 'ERqIB4WsKlrK', hash: 'c203d8a151612acf12457e4d67635a95' },
+  'I':  { optinId: 'qfxthWGz9DZa', hash: 'eed5af6add95a9a6f1252739b1ad8c24' },
+  'IA': { optinId: 'siK86lrZUCa4', hash: '13f3cf8c531952d72e5847c4183e6910' },
+  'K':  { optinId: 'tJQipfrjxYZa', hash: '550a141f12de6341fba65b0ad0433500' }
+};
+
 function showLoading() {
   dominante = calcDominante();
   document.getElementById('quiz').style.display = 'none';
   document.getElementById('loading').style.display = 'block';
+  caricaEmbedKartra(dominante);
 }
 
-function submitForm() {
-  var nome = document.getElementById('f_nome').value.trim();
-  var cognome = document.getElementById('f_cognome').value.trim();
-  var tel = document.getElementById('f_tel').value.trim();
-  var email = document.getElementById('f_email').value.trim();
-  var gdpr = document.getElementById('f_gdpr').checked;
-  var errEl = document.getElementById('formError');
-  var btn = document.getElementById('submitBtn');
+// Carica il vero widget/embed ufficiale Kartra dell'archetipo calcolato,
+// dentro un iframe isolato (srcdoc) che replica lo stile "kf-card" gia'
+// usato nel quiz. L'iframe e' same-origin finche' mostra il form (srcdoc
+// eredita l'origine della pagina che lo ospita); nel momento in cui
+// l'invio va a buon fine, Kartra fa navigare l'iframe verso il proprio
+// dominio (app.kartra.com) per mostrare la sua pagina di conferma: a
+// quel punto l'iframe diventa cross-origin e leggere la sua location
+// genera un errore di sicurezza. Usiamo proprio questo segnale come
+// conferma reale dell'invio riuscito, e SOLO allora scattiamo il
+// redirect verso la pagina Kartra dell'archetipo corretto.
+function caricaEmbedKartra(code) {
+  var cfg = KARTRA_OPTIN[code];
+  var host = document.getElementById('kartraEmbedHost');
+  var fallbackMsg = document.getElementById('fallbackMsg');
+  host.innerHTML = '<p class="kf-embed-loading">Caricamento modulo...</p>';
 
-  if (!nome || !cognome || !tel || !email) {
-    errEl.textContent = 'Compila tutti i campi obbligatori (Nome, Cognome, Telefono, Email) per vedere il tuo risultato.';
-    errEl.style.display = 'block';
+  if (!cfg) {
+    document.getElementById('formError').textContent = 'Errore nel caricamento del modulo. Ricarica la pagina.';
+    document.getElementById('formError').style.display = 'block';
     return;
   }
-  if (!gdpr) {
-    errEl.textContent = 'Devi accettare i termini e le condizioni GDPR per procedere.';
-    errEl.style.display = 'block';
-    return;
-  }
 
-  errEl.style.display = 'none';
-  btn.disabled = true;
-  btn.textContent = 'Invio in corso...';
-
-  if (typeof fbq === 'function') { fbq('track', 'Lead'); }
-
-  // Invio reale del lead a Kartra (endpoint add_lead dell'optin usato dalle
-  // pagine di destinazione). Il redirect avviene SOLO dopo la conferma
-  // dell'invio (evento "load" dell'iframe nascosto), non prima/in parallelo.
-  inviaLeadAKartra({
-    first_name: nome,
-    last_name: cognome,
-    phone: tel,
-    email: email,
-    gdpr_communications: document.getElementById('f_info').checked ? '1' : '0',
-    gdpr_terms: gdpr ? '1' : '0',
-    aaddress_url: window.location.href
-  }, function () {
-    goToKartra();
-  });
-}
-
-function inviaLeadAKartra(dati, onDone) {
-  var KARTRA_OPTIN_URL = 'https://app.kartra.com/process/add_lead/e9L2Vy7DYaoQ';
-  var doneCalled = false;
-
-  function finish() {
-    if (doneCalled) return;
-    doneCalled = true;
-    onDone();
-  }
-
-  var iframeName = 'kartraLeadFrame_' + Date.now();
   var iframe = document.createElement('iframe');
-  iframe.name = iframeName;
-  iframe.style.display = 'none';
-  document.body.appendChild(iframe);
+  iframe.setAttribute('scrolling', 'no');
+  iframe.srcdoc = costruisciSrcdocEmbed(cfg);
 
-  iframe.addEventListener('load', function onLoad() {
-    iframe.removeEventListener('load', onLoad);
-    finish();
+  iframe.addEventListener('load', function () {
+    // Ridimensiona l'iframe in base al contenuto reale del form, finche'
+    // e' ancora same-origin (srcdoc). Una volta diventato cross-origin
+    // (dopo l'invio riuscito) questa lettura fallira' silenziosamente,
+    // il che va bene: a quel punto scatta gia' il redirect.
+    try {
+      var doc = iframe.contentDocument;
+      if (doc && doc.body) {
+        iframe.style.height = Math.max(480, doc.body.scrollHeight + 20) + 'px';
+      }
+    } catch (e) { /* iframe navigato fuori dominio: ok, gestito dal poller sotto */ }
   });
 
-  var form = document.createElement('form');
-  form.action = KARTRA_OPTIN_URL;
-  form.method = 'POST';
-  form.target = iframeName;
-  form.style.display = 'none';
+  host.innerHTML = '';
+  host.appendChild(iframe);
 
-  Object.keys(dati).forEach(function (key) {
-    var input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = key;
-    input.value = dati[key];
-    form.appendChild(input);
-  });
+  // Poller: controlla periodicamente se l'iframe e' ancora nello stesso
+  // dominio (form ancora visibile) oppure e' stato reindirizzato da
+  // Kartra dopo un invio riuscito (diventa cross-origin -> throw).
+  var tentativi = 0;
+  var poller = setInterval(function () {
+    tentativi++;
+    var ancoraStessoDominio = true;
+    try {
+      // Se questa riga non lancia eccezioni, l'iframe e' ancora sul
+      // nostro srcdoc (form non ancora inviato con successo).
+      void iframe.contentWindow.location.href;
+    } catch (e) {
+      ancoraStessoDominio = false;
+    }
 
-  document.body.appendChild(form);
-  form.submit();
+    if (!ancoraStessoDominio) {
+      clearInterval(poller);
+      if (typeof fbq === 'function') { fbq('track', 'Lead'); }
+      goToKartra();
+      return;
+    }
 
-  // Fallback di sicurezza: se per qualsiasi motivo l'evento "load"
-  // dell'iframe non dovesse arrivare (rete lenta, blocchi vari), non
-  // blocchiamo l'utente all'infinito: procediamo comunque dopo 4s.
-  setTimeout(finish, 4000);
+    // Fallback di sicurezza dopo ~5 minuti: mostra un link manuale nel
+    // caso l'utente abbia gia' inviato ma per qualche motivo il
+    // rilevamento automatico non abbia funzionato.
+    if (tentativi > 600) {
+      clearInterval(poller);
+      fallbackMsg.style.display = 'block';
+    }
+  }, 500);
+}
+
+function costruisciSrcdocEmbed(cfg) {
+  var css = '' +
+    'html,body{margin:0!important;padding:0!important;background:transparent!important;font-family:inherit!important;}' +
+    '.kartra_optin_bgcolor{background:transparent!important;}' +
+    '.kartra_optin_popover{background:#1a1a1a!important;color:#eee!important;border:1px solid #333!important;}' +
+    '.kartra_optin_ti,input.kartra_optin_ti,input[type=text].kartra_optin_ti,input[type=email].kartra_optin_ti,input[type=tel].kartra_optin_ti{' +
+    'width:100%!important;box-sizing:border-box!important;padding:16px 44px 16px 16px!important;' +
+    'border:1px solid #333!important;border-radius:8px!important;font-size:17px!important;font-family:inherit!important;' +
+    'background:#1a1a1a!important;color:#fff!important;}' +
+    '.kartra_optin_ti::placeholder{color:#888!important;}' +
+    'label,.kartra_optin_controls,.kartra_optin_controls *,p,span,div{color:#eee!important;}' +
+    '.kartra_optin_footer-poweredby{opacity:0.55!important;}' +
+    '.kartra_optin_submit_btn,.kartra_optin_submit_btn:disabled,.kartra_optin_submit_btn *{width:100%!important;padding:18px!important;' +
+    'background:#f0c14b!important;color:#0a0a0a!important;border:none!important;' +
+    'border-radius:8px!important;font-size:17px!important;font-weight:800!important;letter-spacing:0.3px!important;cursor:pointer!important;' +
+    'font-family:inherit!important;text-transform:uppercase!important;margin-top:8px!important;box-sizing:border-box!important;box-shadow:none!important;}' +
+    'a{color:#f0c14b!important;}';
+  return '<!DOCTYPE html><html><head><meta charset="utf-8">' +
+    '<style>' + css + '</style></head><body style="background:transparent">' +
+    '<div class="kartra_optin_container' + cfg.hash + '"></div>' +
+    '<script src="https://app.kartra.com/optin/' + cfg.optinId + '"><\/script>' +
+    '<style>' + css + '</style>' +
+    '</body></html>';
 }
 
 function goToKartra() {
