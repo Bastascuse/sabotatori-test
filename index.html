@@ -85,6 +85,18 @@ body {
 .kf-embed-host { min-height: 480px; }
 .kf-embed-host iframe { width: 100%; border: none; display: block; }
 .kf-embed-loading { color: #ccc; text-align: center; padding: 2rem 0; font-size: 15px; }
+/* Pagina finale unica (Blocco A: archetipo + Blocco B: Complimenti) */
+.kf-arch-block { text-align: center; }
+.kf-arch-block img { width: 100%; max-width: 420px; border-radius: 10px; display: block; margin: 0 auto 1.25rem; }
+.kf-arch-numname { color: #fff; font-size: 26px; font-weight: 800; letter-spacing: 0.3px; margin-bottom: 0.5rem; }
+.kf-arch-phrase { color: #f0c14b; font-size: 20px; font-weight: 800; font-style: italic; margin-bottom: 0; }
+.kf-compl-block { margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #333; text-align: center; }
+.kf-compl-photo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin: 0 auto 1.25rem; display: block; border: 3px solid #f0c14b; }
+.kf-compl-title { color: #f0c14b; font-size: 32px; font-weight: 800; margin-bottom: 0.25rem; }
+.kf-compl-subtitle { color: #f0f0f0; font-size: 20px; font-weight: 700; margin-bottom: 1.25rem; }
+.kf-compl-text { color: #ddd; font-size: 17px; line-height: 1.6; margin-bottom: 1.75rem; }
+.kf-compl-btn { display: inline-block; width: 100%; box-sizing: border-box; padding: 18px; background: #f0c14b; color: #0a0a0a; border: none; border-radius: 8px; font-size: 16px; font-weight: 800; letter-spacing: 0.3px; cursor: pointer; font-family: inherit; text-transform: uppercase; text-decoration: none; }
+.kf-compl-btn:hover { background: #f7d377; }
 .intro h1 { font-size: 34px; font-weight: 800; margin-bottom: 1rem; color: #fff; line-height: 1.3; }
 .intro p { font-size: 18px; color: #aaa; line-height: 1.7; margin-bottom: 1rem; }
 @media(max-width:600px){
@@ -135,6 +147,27 @@ body {
     <p id="fallbackMsg" class="kf-note" style="display:none">
       Hai già inviato i tuoi dati? <a href="#" id="fallbackLink" onclick="goToKartra(); return false;" style="color:#f0c14b;">Clicca qui per vedere il risultato</a>.
     </p>
+  </div>
+</div>
+
+<!-- Pagina finale unica (sostituisce il vecchio redirect esterno a Kartra):
+     Blocco A = contenuto dell'archetipo calcolato (PAGES[dominante]/ARCHETIPI[dominante]);
+     Blocco B = sezione "Complimenti / Ottimo lavoro!" con foto di Massimiliano. -->
+<div id="final" style="display:none">
+  <div class="kf-card">
+    <div id="finalArchBlock" class="kf-arch-block">
+      <img id="finalArchImg" src="" alt="">
+      <div id="finalArchNumName" class="kf-arch-numname"></div>
+      <div id="finalArchPhrase" class="kf-arch-phrase"></div>
+    </div>
+
+    <div class="kf-compl-block">
+      <img src="02-foto-massimiliano.jpg" alt="Massimiliano" class="kf-compl-photo">
+      <div class="kf-compl-title">Complimenti</div>
+      <div class="kf-compl-subtitle">Ottimo lavoro!</div>
+      <p class="kf-compl-text">Controlla subito WhatsApp e la tua mail (controlla che non sia finita nello spam). Hai il nome del tuo sabotatore! Ora impara a fermarlo e inizia a lavorarci da oggi!</p>
+      <a href="https://zeroscuse.kartra.com/page/bastascusetripwire" class="kf-compl-btn">Scopri il prossimo passo (consulenza con Massimiliano inclusa)</a>
+    </div>
   </div>
 </div>
 
@@ -349,6 +382,8 @@ function costruisciSrcdocEmbed(cfg) {
     'background:#1a1a1a!important;color:#fff!important;}' +
     '.kartra_optin_ti::placeholder{color:#888!important;}' +
     'label,.kartra_optin_controls,.kartra_optin_controls *,p,span,div{color:#eee!important;}' +
+    'input[type=checkbox]{width:16px!important;height:16px!important;accent-color:#fff!important;' +
+    'border:1.5px solid #fff!important;outline:none!important;background:#1a1a1a!important;filter:none!important;}' +
     '.kartra_optin_footer-poweredby{opacity:0.55!important;}' +
     '.kartra_optin_submit_btn,.kartra_optin_submit_btn:disabled,.kartra_optin_submit_btn *{width:100%!important;padding:18px!important;' +
     'background:#f0c14b!important;color:#0a0a0a!important;border:none!important;' +
@@ -363,8 +398,37 @@ function costruisciSrcdocEmbed(cfg) {
     '</body></html>';
 }
 
+// Contenuto del Blocco A (numero+nome, frase distintiva, immagine) per
+// ciascun archetipo: letto direttamente dalle 9 pagine Kartra di
+// destinazione gia' esistenti in PAGES (stessa associazione, non modificata).
+var ARCHETIPI = {
+  'P':  { num: '03', nome: 'IL COMPIACENTE',    frase: 'PRIMA GLI ALTRI.',            img: 'https://d11n7da8rpqbjy.cloudfront.net/zeroscuse/295089753227ChatGPT_Image_19_giu_2026__16_43_40.png' },
+  'PE': { num: '02', nome: 'IL PERFEZIONISTA',  frase: 'NON È ANCORA ABBASTANZA.',    img: 'https://d11n7da8rpqbjy.cloudfront.net/zeroscuse/583836202788ChatGPT_Image_19_giu_2026__16_42_47.png' },
+  'C':  { num: '01', nome: 'IL PROCRASTINATORE',frase: 'LO FACCIO DOMANI.',           img: 'https://d11n7da8rpqbjy.cloudfront.net/zeroscuse/162391228743ChatGPT_Image_20_giu_2026__19_17_58.png' },
+  'CO': { num: '04', nome: 'IL CONTROLLORE',    frase: 'FACCIO PRIMA IO.',            img: 'https://d11n7da8rpqbjy.cloudfront.net/zeroscuse/468113243574ChatGPT_Image_19_giu_2026__16_44_37.png' },
+  'V':  { num: '05', nome: 'IL VITTIMISTA',     frase: 'CON ME VA SEMPRE COSÌ.',      img: 'https://d11n7da8rpqbjy.cloudfront.net/zeroscuse/484798220006ChatGPT_Image_19_giu_2026__16_45_25.png' },
+  'D':  { num: '06', nome: 'IL DISPERSIVO',     frase: 'HO TROPPE COSE DA FARE.',     img: 'https://d11n7da8rpqbjy.cloudfront.net/zeroscuse/301435123740ChatGPT_Image_19_giu_2026__16_46_21.png' },
+  'I':  { num: '07', nome: "L'INVISIBILE",      frase: 'MEGLIO NON ESPORSI.',         img: 'https://d11n7da8rpqbjy.cloudfront.net/zeroscuse/35668556986ChatGPT_Image_19_giu_2026__16_57_20.png' },
+  'IA': { num: '08', nome: "L'IPERATTIVO",      frase: 'NON HO TEMPO.',               img: 'https://d11n7da8rpqbjy.cloudfront.net/zeroscuse/602116153463ChatGPT_Image_19_giu_2026__16_49_45.png' },
+  'K':  { num: '09', nome: 'IL CONSERVATORE',   frase: 'MEGLIO NON RISCHIARE.',       img: 'https://d11n7da8rpqbjy.cloudfront.net/zeroscuse/150561924516ChatGPT_Image_19_giu_2026__17_04_53.png' }
+};
+
+// Mostra la pagina finale unica (Blocco A + Blocco B) al posto del vecchio
+// redirect esterno verso PAGES[dominante]. Usa la stessa variabile
+// "dominante" gia' calcolata da calcDominante() e gli stessi riferimenti
+// di ARCHETIPI/PAGES/KARTRA_OPTIN, senza toccarli.
 function goToKartra() {
-  window.top.location.href = PAGES[dominante];
+  var arch = ARCHETIPI[dominante];
+  if (arch) {
+    document.getElementById('finalArchImg').src = arch.img;
+    document.getElementById('finalArchImg').alt = arch.num + ' ' + arch.nome;
+    document.getElementById('finalArchNumName').textContent = arch.num + ' — ' + arch.nome;
+    document.getElementById('finalArchPhrase').textContent = '"' + arch.frase + '"';
+  } else {
+    document.getElementById('finalArchBlock').style.display = 'none';
+  }
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('final').style.display = 'block';
 }
 </script>
 </body>
