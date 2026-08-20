@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+html,body{margin:0;padding:0;background:#1a1a1a;font-family:sans-serif;}
+.wrap{padding:40px;display:flex;gap:60px;align-items:center;}
+label{color:#eee;display:flex;align-items:center;gap:10px;font-size:16px;}
+input[type=checkbox]{-webkit-appearance:none!important;-moz-appearance:none!important;appearance:none!important;
+width:20px!important;height:20px!important;min-width:20px!important;min-height:20px!important;
+box-sizing:border-box!important;margin:0!important;padding:0!important;
+border:2px solid #ffffff!important;border-radius:4px!important;
+background-color:transparent!important;background-image:none!important;
+outline:none!important;box-shadow:none!important;filter:none!important;
+-webkit-tap-highlight-color:transparent!important;cursor:pointer!important;
+position:relative!important;display:inline-block!important;vertical-align:middle!important;flex-shrink:0!important;}
+input[type=checkbox]:checked{background-color:#ffffff!important;border-color:#ffffff!important;}
+input[type=checkbox]:checked::after{content:''!important;position:absolute!important;left:6px!important;top:2px!important;
+width:5px!important;height:10px!important;border-style:solid!important;border-color:#0a0a0a!important;
+border-width:0 3px 3px 0!important;-webkit-transform:rotate(45deg)!important;transform:rotate(45deg)!important;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <label><input type="checkbox" id="cb1"> Deselezionata</label>
+  <label><input type="checkbox" id="cb2" checked> Selezionata</label>
+</div>
+</body>
+</html>
