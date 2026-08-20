@@ -384,20 +384,50 @@ function costruisciSrcdocEmbed(cfg) {
     '.kartra_optin_ti::placeholder{color:#888!important;}' +
     'label,.kartra_optin_controls,.kartra_optin_controls *,p,span,div{color:#eee!important;}' +
     '.kartra-optin-checkbox small{border:2px solid #ffffff!important;background-color:transparent!important;' +
-    'background-image:none!important;box-sizing:border-box!important;opacity:1!important;}' +
-    'input[type=checkbox]:checked+small{background-color:#ffffff!important;border-color:#ffffff!important;}' +
-    'input[type=checkbox]:checked+small::after{border-color:#0a0a0a!important;background-color:#0a0a0a!important;}' +
+    'background-image:none!important;box-sizing:border-box!important;opacity:1!important;' +
+    'display:flex!important;align-items:center!important;justify-content:center!important;' +
+    'overflow:hidden!important;line-height:1!important;font-size:14px!important;font-weight:900!important;text-align:center!important;}' +
     '.kartra_optin_footer-poweredby{opacity:0.55!important;}' +
     '.kartra_optin_submit_btn,.kartra_optin_submit_btn:disabled,.kartra_optin_submit_btn *{width:100%!important;padding:18px!important;' +
     'background:#f0c14b!important;color:#0a0a0a!important;border:none!important;' +
     'border-radius:8px!important;font-size:17px!important;font-weight:800!important;letter-spacing:0.3px!important;cursor:pointer!important;' +
     'font-family:inherit!important;text-transform:uppercase!important;margin-top:8px!important;box-sizing:border-box!important;box-shadow:none!important;}' +
     'a{color:#f0c14b!important;}';
+  var js = '' +
+    'function bs_syncCheckboxVisual(cb){' +
+    'var vis = cb.nextElementSibling;' +
+    'if(!vis || vis.tagName !== "SMALL") return;' +
+    'if(cb.checked){' +
+    'vis.style.setProperty("background","#000000","important");' +
+    'vis.style.setProperty("border","2px solid #ffffff","important");' +
+    'vis.innerHTML = "<span style=\\"color:#ffffff!important;font-weight:900;font-size:14px;line-height:1;\\">&#10003;<\\/span>";' +
+    '} else {' +
+    'vis.style.setProperty("background","transparent","important");' +
+    'vis.style.setProperty("border","2px solid #ffffff","important");' +
+    'vis.innerHTML = "";' +
+    '}' +
+    '}' +
+    'document.addEventListener("click", function(e){' +
+    'var t = e.target;' +
+    'if(t && t.tagName === "INPUT" && t.type === "checkbox"){ setTimeout(function(){ bs_syncCheckboxVisual(t); }, 0); }' +
+    '}, true);' +
+    'document.addEventListener("change", function(e){' +
+    'var t = e.target;' +
+    'if(t && t.tagName === "INPUT" && t.type === "checkbox"){ bs_syncCheckboxVisual(t); }' +
+    '}, true);' +
+    'var bs_syncTries = 0;' +
+    'var bs_syncInterval = setInterval(function(){' +
+    'bs_syncTries++;' +
+    'var boxes = document.querySelectorAll("input[type=checkbox]");' +
+    'boxes.forEach(function(cb){ bs_syncCheckboxVisual(cb); });' +
+    'if(bs_syncTries >= 20) clearInterval(bs_syncInterval);' +
+    '}, 300);';
   return '<!DOCTYPE html><html><head><meta charset="utf-8">' +
     '<style>' + css + '</style></head><body style="background:transparent">' +
     '<div class="kartra_optin_container' + cfg.hash + '"></div>' +
     '<script src="https://app.kartra.com/optin/' + cfg.optinId + '"><\/script>' +
     '<style>' + css + '</style>' +
+    '<script>' + js + '<\/script>' +
     '</body></html>';
 }
 
