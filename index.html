@@ -11,6 +11,21 @@ var BS_PRIVACY_URL = 'https://strategieefficaci.com/privacy-policy';
 var BS_CONSENT_KEY = 'bs_cookie_consent_v1';
 function bsLeggiConsenso(){ try { return localStorage.getItem(BS_CONSENT_KEY); } catch(e) { return null; } }
 function bsSalvaConsenso(v){ try { localStorage.setItem(BS_CONSENT_KEY, v); } catch(e) {} }
+// --- Tracciamento contatto (Lead) robusto: una sola volta per test completato ---
+var BS_QUIZ_KEY = 'bs_quiz_ts';
+var BS_LEAD_KEY = 'bs_lead_ts';
+var BS_FINESTRA_MS = 3 * 60 * 60 * 1000; // 3 ore
+function bsOra(){ return Date.now(); }
+function bsLeggiTs(k){ try { return parseInt(localStorage.getItem(k) || '0', 10) || 0; } catch(e) { return 0; } }
+function bsScriviTs(k, v){ try { localStorage.setItem(k, String(v)); } catch(e) {} }
+function bsSegnaQuizCompletato(){ bsScriviTs(BS_QUIZ_KEY, bsOra()); }
+function bsQuizRecente(){ return (bsOra() - bsLeggiTs(BS_QUIZ_KEY)) < BS_FINESTRA_MS; }
+function bsTrackLead(){
+  var quizTs = bsLeggiTs(BS_QUIZ_KEY);
+  if (bsLeggiTs(BS_LEAD_KEY) >= quizTs && quizTs > 0) return; // gia' inviato per questo test
+  bsScriviTs(BS_LEAD_KEY, bsOra());
+  if (typeof fbq === 'function') { fbq('track', 'Lead', {}, { eventID: 'lead-' + quizTs }); }
+}
 function bsCaricaPixel(){
   if (window.fbq) return;
   !function(f,b,e,v,n,t,s)
@@ -306,6 +321,7 @@ var KARTRA_OPTIN = {
 };
 
 function showLoading() {
+  bsSegnaQuizCompletato();
   dominante = calcDominante();
   document.getElementById('quiz').style.display = 'none';
   document.getElementById('loading').style.display = 'block';
@@ -371,7 +387,7 @@ function caricaEmbedKartra(code) {
 
     if (!ancoraStessoDominio) {
       clearInterval(poller);
-      if (typeof fbq === 'function') { fbq('track', 'Lead'); }
+      bsTrackLead();
       goToKartra();
       return;
     }
@@ -488,6 +504,19 @@ function goToKartra() {
   var params = new URLSearchParams(window.location.search);
   var archParam = (params.get('arch') || '').toUpperCase();
   if (ARCHETIPI[archParam]) {
+    // Arrivo dalla pagina di successo Kartra dopo l'invio del modulo:
+    // se il redirect avviene dentro l'iframe del modulo, passa tutto alla pagina principale.
+    if (window.top !== window) {
+      try {
+        if (window.top.bsTrackLead) {
+          window.top.bsTrackLead();
+          window.top.dominante = archParam;
+          window.top.goToKartra();
+          return;
+        }
+      } catch (e) { /* top non accessibile: prosegui qui */ }
+    }
+    if (bsQuizRecente()) { bsTrackLead(); }
     dominante = archParam;
     document.getElementById('intro').style.display = 'none';
     document.getElementById('quiz').style.display = 'none';
