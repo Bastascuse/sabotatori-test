@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Apro Messaggi...</title>
+<style>
+body{font-family:-apple-system,Arial,sans-serif;background:#1a1a1a;color:#eee;text-align:center;padding:48px 20px}
+a{display:inline-block;margin-top:24px;padding:16px 24px;background:#f0c14b;color:#0a0a0a;border-radius:8px;text-decoration:none;font-weight:800}
+</style>
+</head>
+<body>
+<p>Sto aprendo l'app Messaggi...</p>
+<a id="go" href="#">Tocca qui se non si apre</a>
+<script>
+// Pagina ponte per il pulsante SMS della mail di notifica lead:
+// Gmail su Android non apre i link "sms:", quindi la mail punta qui
+// e la pagina apre l'app Messaggi con numero e testo gia' compilati.
+// Uso: sms.html#sms:+39NUMERO?&body=TESTO
+var u = location.hash.slice(1);
+if (u.indexOf('sms:') === 0) {
+  if (!/iPhone|iPad|iPod/i.test(navigator.userAgent)) { u = u.replace('?&', '?'); }
+  document.getElementById('go').href = u;
+  location.href = u;
+}
+</script>
+</body>
+</html>
