@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test della Leadership - Basta Scuse</title>
+<!-- Meta Pixel Code (caricato SOLO dopo consenso cookie, vedi bsCaricaPixel) -->
+<script>
+var BS_PRIVACY_URL = 'https://strategieefficaci.com/privacy-policy';
+var BS_CONSENT_KEY = 'bs_cookie_consent_v1';
+function bsLeggiConsenso(){ try { return localStorage.getItem(BS_CONSENT_KEY); } catch(e) { return null; } }
+function bsSalvaConsenso(v){ try { localStorage.setItem(BS_CONSENT_KEY, v); } catch(e) {} }
+// --- Tracciamento contatto (Lead) robusto: una sola volta per test completato ---
+var BS_QUIZ_KEY = 'bs_lead_quiz_ts';
+var BS_LEAD_KEY = 'bs_lead_lead_ts';
+var BS_FINESTRA_MS = 3 * 60 * 60 * 1000; // 3 ore
+function bsOra(){ return Date.now(); }
+function bsLeggiTs(k){ try { return parseInt(localStorage.getItem(k) || '0', 10) || 0; } catch(e) { return 0; } }
+function bsScriviTs(k, v){ try { localStorage.setItem(k, String(v)); } catch(e) {} }
+function bsSegnaQuizCompletato(){ bsScriviTs(BS_QUIZ_KEY, bsOra()); }
+function bsQuizRecente(){ return (bsOra() - bsLeggiTs(BS_QUIZ_KEY)) < BS_FINESTRA_MS; }
+function bsTrackLead(){
+  var quizTs = bsLeggiTs(BS_QUIZ_KEY);
+  if (bsLeggiTs(BS_LEAD_KEY) >= quizTs && quizTs > 0) return; // gia' inviato per questo test
+  bsScriviTs(BS_LEAD_KEY, bsOra());
+  if (typeof fbq === 'function') { fbq('track', 'Lead', {}, { eventID: 'lead-' + quizTs }); }
+}
+function bsCaricaPixel(){
+  if (window.fbq) return;
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '1047239214392641');
+  fbq('track', 'PageView');
+}
+if (bsLeggiConsenso() === 'accetta') { bsCaricaPixel(); }
+</script>
+<!-- End Meta Pixel Code -->
+<style>
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif; font-weight: 300; -webkit-font-smoothing: antialiased;
+  background: #070504;
+  color: #f0f0f0;
+  min-height: 100vh;
+}
+.container { max-width: 680px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+.brand { text-align: center; margin-bottom: 2rem; font-size: 32px; font-weight: 800; letter-spacing: 0.5px; }
+.brand span { color: #e9b44c; }
+.progress-bar { height: 5px; background: #241d15; border-radius: 3px; margin-bottom: 1.75rem; overflow: hidden; }
+.progress-fill { height: 100%; background: #e9b44c; border-radius: 3px; transition: width 0.3s; }
+.q-counter { font-size: 15px; color: #e9b44c; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 0.75rem; }
+.q-text { font-size: 22px; font-weight: 700; line-height: 1.5; margin-bottom: 2rem; color: #fff; }
+.likert-scale { display: flex; flex-direction: column; gap: 12px; }
+.likert-option { display: flex; align-items: center; gap: 16px; padding: 18px 20px; border: 1px solid #2f261c; border-radius: 10px; cursor: pointer; background: #16120e; transition: all 0.15s; }
+.likert-option:hover { border-color: #e9b44c; background: #2a1f12; }
+.likert-option.selected { border-color: #e9b44c; background: #2a1f12; }
+.likert-circle { width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid #45382a; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: #a8957c; flex-shrink: 0; }
+.likert-option.selected .likert-circle { background: #e9b44c; border-color: #e9b44c; color: #1a1208; }
+.likert-label { font-size: 17px; color: #e8e8e8; line-height: 1.4; }
+.nav { display: flex; justify-content: space-between; margin-top: 1.75rem; }
+.btn { padding: 16px 30px; border-radius: 8px; border: 1px solid #3a2f22; background: #1a1510; color: #ddd; font-size: 18px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.btn:hover { background: #241d15; }
+.btn.primary { background: #e9b44c; border-color: #e9b44c; color: #1a1208; font-weight: 800; }
+.btn.primary:hover { background: #f4c869; }
+.btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.card { background: #16120e; border-radius: 16px; padding: 2.25rem; border: 1px solid #2e251b; }
+.card h2 { font-size: 28px; font-weight: 800; margin-bottom: 0.5rem; color: #fff; }
+.card p { font-size: 18px; color: #aaa; margin-bottom: 1.5rem; line-height: 1.6; }
+.field { margin-bottom: 1rem; }
+.field label { display: block; font-size: 16px; font-weight: 700; color: #e9b44c; margin-bottom: 6px; }
+.field input { width: 100%; padding: 14px; border: 1px solid #3a2f22; border-radius: 8px; font-size: 17px; font-family: inherit; background: #0e0b08; color: #fff; }
+.field input::placeholder { color: #666; }
+.field input:focus { outline: none; border-color: #e9b44c; }
+.submit-btn { width: 100%; padding: 18px; background: #e9b44c; color: #1a1208; border: none; border-radius: 8px; font-size: 19px; font-weight: 800; cursor: pointer; font-family: inherit; }
+.submit-btn:hover { background: #f4c869; }
+.loading { text-align: center; padding: 3rem; }
+
+.intro h1 { font-size: 32px; font-weight: 800; margin-bottom: 1rem; color: #fff; line-height: 1.3; }
+.intro p { font-size: 18px; color: #bbb; line-height: 1.7; margin-bottom: 1rem; }
+.likert-label { font-size: 17px; }
+.form-card .err { color: #d9805f; font-size: 15px; margin: 0.25rem 0 0.75rem; display: none; }
+.privacy { font-size: 13px; color: #bbb; text-align: center; margin: 0.9rem 0 0; line-height: 1.5; }
+.privacy a { color: #e9b44c; }
+.res-card { background: linear-gradient(180deg, rgba(30,24,18,0.92) 0%, rgba(18,14,11,0.94) 100%); border-radius: 14px; padding: 2.25rem; box-shadow: 0 10px 40px rgba(0,0,0,0.45); border: 1px solid #2e251b; }
+.res-kicker { text-align: center; color: #e9b44c; font-size: 14px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: .5rem; }
+.res-level { text-align: center; font-size: 32px; font-weight: 800; color: #fff; line-height: 1.2; }
+.res-pct { text-align: center; font-size: 56px; font-weight: 800; color: #e9b44c; margin: .5rem 0 1rem; }
+.res-text { font-size: 17px; color: #ddd; line-height: 1.65; margin-bottom: 1.5rem; }
+.bars { margin: 1.5rem 0 2rem; }
+.bar-row { margin-bottom: 14px; }
+.bar-label { display: flex; justify-content: space-between; font-size: 15px; color: #ddd; margin-bottom: 6px; }
+.bar-label b { color: #fff; }
+.bar-track { height: 12px; background: #2e251b; border-radius: 6px; overflow: hidden; }
+.bar-fill { height: 100%; background: #8c6d45; border-radius: 6px; }
+.bar-row.weak .bar-fill { background: #d9805f; }
+.bar-row.weak .bar-label b { color: #d9805f; }
+.freno { border: 2px solid #d9805f; border-radius: 12px; padding: 1.5rem; background: rgba(217,128,95,0.07); margin-bottom: 2rem; }
+.freno-kicker { color: #d9805f; font-size: 14px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: .35rem; }
+.freno h3 { font-size: 22px; color: #fff; margin-bottom: .2rem; }
+.freno .sub { color: #bbb; font-size: 15px; margin-bottom: 1rem; font-style: italic; }
+.freno p { font-size: 17px; color: #e8e8e8; line-height: 1.65; margin-bottom: .8rem; }
+.freno p.future { color: #fff; font-weight: 700; margin-bottom: 0; }
+.invite { border-top: 1px solid #3a2f22; padding-top: 2rem; }
+.invite h3 { font-size: 24px; color: #e9b44c; text-align: center; line-height: 1.3; margin-bottom: 1rem; }
+.invite p { font-size: 17px; color: #ddd; line-height: 1.6; margin-bottom: 1rem; }
+.date { display: flex; gap: 14px; align-items: flex-start; background: #16120e; border: 1px solid #3a2f22; border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; }
+.date .d { background: #e9b44c; color: #1a1208; font-weight: 800; border-radius: 8px; padding: 6px 10px; text-align: center; min-width: 64px; font-size: 14px; line-height: 1.2; }
+.date .d b { display: block; font-size: 22px; }
+.date .t { font-size: 16px; color: #eee; line-height: 1.45; }
+.date .t b { color: #fff; }
+.bio { display: flex; gap: 16px; align-items: flex-start; margin: 1.5rem 0; }
+.bio img { width: 84px; height: 84px; border-radius: 50%; object-fit: cover; border: 3px solid #e9b44c; flex-shrink: 0; }
+.bio p { font-size: 15px; color: #ccc; line-height: 1.6; margin: 0; }
+.cta-note { text-align: center; font-size: 18px; color: #fff; font-weight: 700; margin-top: 1rem; }
+.mail-note { font-size: 14px; color: #aaa; text-align: center; margin-top: 1rem; }
+@media(max-width:600px){ .brand{font-size:20px !important; letter-spacing:4px !important;} .res-card{padding:1.5rem 1.1rem;} .res-level{font-size:26px;} .bio img{width:64px;height:64px;} }
+.bs-cookie { position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 9999; max-width: 680px; margin: 0 auto; background: #16120e; color: #eee; border: 1px solid #45382a; border-radius: 12px; padding: 16px 18px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); font-size: 14px; line-height: 1.5; display: none; }
+.bs-cookie a { color: #e9b44c; }
+.bs-cookie-btns { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+.bs-cookie-btns button { flex: 1; min-width: 120px; padding: 12px; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; border: 1px solid #e9b44c; }
+.bs-cookie-ok { background: #e9b44c; color: #1a1208; }
+.bs-cookie-no { background: transparent; color: #eee; border-color: #666 !important; }
+.kf-privacy { font-size: 13px; color: #bbb; text-align: center; margin: 0.75rem 0 0; line-height: 1.5; }
+.kf-privacy a { color: #e9b44c; }
+
+
+/* Tipografia Helvetica Neue sottile */
+h1,h2,.res-level,.intro h1,.card h2 { font-weight: 200 !important; letter-spacing: 0.2px; }
+.res-pct { font-weight: 100 !important; font-size: 72px !important; }
+.brand { font-weight: 300 !important; letter-spacing: 6px !important; font-size: 26px !important; }
+.brand span { font-weight: 500; }
+.q-text { font-weight: 300 !important; }
+.q-counter,.res-kicker,.freno-kicker { font-weight: 500 !important; letter-spacing: 2px !important; font-size: 13px !important; }
+.likert-label,.res-text,.freno p,.invite p,.bio p,.date .t { font-weight: 300; }
+.freno h3,.invite h3 { font-weight: 300 !important; }
+.freno p.future,.cta-note { font-weight: 500 !important; }
+b, .date .t b, .bar-label b { font-weight: 500; }
+.submit-btn,.btn.primary { font-weight: 600 !important; letter-spacing: 1px; box-shadow: 0 6px 22px rgba(233,180,76,0.35); }
+.likert-circle { font-weight: 400 !important; }
+.date .d { font-weight: 600 !important; }
+.card,.res-card,.date,.likert-option { box-shadow: 0 8px 30px rgba(0,0,0,0.35); }
+.res-pct { text-shadow: 0 0 30px rgba(233,180,76,0.35); }
+
+/* Luce di lampada (stile foto): alone caldo in alto a destra, cono di luce, riflesso sul tavolo */
+body::before { content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(ellipse 26% 5% at 80% 2%, rgba(255,222,160,0.55), transparent 70%),
+    radial-gradient(ellipse 40% 32% at 80% 4%, rgba(245,178,90,0.30), transparent 72%),
+    radial-gradient(ellipse 38% 85% at 80% 0%, rgba(225,150,70,0.13), transparent 75%),
+    radial-gradient(ellipse 90% 28% at 72% 100%, rgba(160,95,40,0.20), transparent 70%),
+    linear-gradient(90deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 60%); }
+.card, .res-card { background: linear-gradient(180deg, rgba(28,21,15,0.80) 0%, rgba(14,10,8,0.86) 100%) !important; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border-color: rgba(233,180,76,0.16) !important; }
+.likert-option { background: rgba(22,17,12,0.82); }
+/* Pulsanti: forma a pillola, luce di lampada (avorio -> ambra), diversi dal test sabotatori */
+.submit-btn, .btn.primary, .bs-cookie-ok {
+  border-radius: 999px !important; border: 1px solid rgba(255,230,180,0.55) !important;
+  background: linear-gradient(180deg, #fbe6b6 0%, #f0c472 45%, #d29a45 100%) !important;
+  color: #2a1a08 !important; text-shadow: 0 1px 0 rgba(255,240,210,0.5);
+  box-shadow: 0 0 0 4px rgba(240,190,100,0.10), 0 10px 30px rgba(230,160,70,0.35), inset 0 1px 0 rgba(255,255,255,0.6) !important; }
+.submit-btn:hover, .btn.primary:hover { filter: brightness(1.06); }
+.btn { border-radius: 999px; }
+.bs-cookie-no { border-radius: 999px !important; }
+.btn.primary:disabled { opacity: .35; }
+/* Date e risposte scelte: contorno dorato invece del pieno */
+.date .d { background: transparent !important; color: #f0c472 !important; border: 1px solid rgba(240,196,114,0.6); }
+.likert-option.selected { background: rgba(240,180,90,0.10) !important; border-color: rgba(240,196,114,0.75) !important; box-shadow: 0 0 24px rgba(240,180,90,0.18); }
+.likert-option.selected .likert-circle { background: linear-gradient(180deg,#fbe6b6,#d29a45) !important; border-color: transparent !important; color: #2a1a08 !important; }
+.progress-fill { background: linear-gradient(90deg, #d29a45, #fbe6b6) !important; }
+@media(max-width:600px){ .brand{font-size:19px !important; letter-spacing:3px !important; white-space:nowrap;} }
+.bio img { object-position: center top; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="brand">METODO BASTA <span>SCUSE</span></div>
+
+<!-- INTRO -->
+<div id="intro" class="card intro">
+  <h1>Test della Leadership</h1>
+  <p>Scopri quanto la tua attività dipende da te e qual è il <b style="color:#fff">freno principale</b> della tua leadership.</p>
+  <p>9 domande. Rispondi pensando a come vanno le cose <b style="color:#fff">oggi</b>, non a come vorresti che andassero.</p>
+  <p style="font-size:16px;color:#999;">Circa 2 minuti. Gratuito.</p>
+  <div style="margin-top:1.5rem">
+    <button class="submit-btn" onclick="startTest()">Inizia il test &gt;&gt;</button>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz" style="display:none">
+  <div class="progress-bar"><div class="progress-fill" id="prog"></div></div>
+  <div class="q-counter" id="qcount"></div>
+  <div class="q-text" id="qtext"></div>
+  <div class="likert-scale" id="opts"></div>
+  <div class="nav">
+    <button class="btn" id="btnPrev" onclick="prev()">&lt;&lt; Indietro</button>
+    <button class="btn primary" id="btnNext" onclick="next()" disabled>Avanti &gt;&gt;</button>
+  </div>
+</div>
+
+<!-- FORM -->
+<div id="form" class="card form-card" style="display:none">
+  <h2>Il tuo risultato è pronto!</h2>
+  <p>Inserisci i tuoi dati per vederlo. Ti mando anche una copia via email e WhatsApp.</p>
+  <form id="leadForm" onsubmit="inviaForm(event)" novalidate>
+    <div class="field"><label for="fNome">Nome</label><input id="fNome" type="text" autocomplete="given-name" placeholder="Il tuo nome"></div>
+    <div class="field"><label for="fEmail">Email</label><input id="fEmail" type="email" autocomplete="email" placeholder="La tua email migliore"></div>
+    <div class="field"><label for="fTel">WhatsApp</label><input id="fTel" type="tel" autocomplete="tel" placeholder="Es. 333 1234567"></div>
+    <p id="formErr" class="err"></p>
+    <button type="submit" id="btnSubmit" class="submit-btn">VEDI IL MIO RISULTATO &gt;&gt;</button>
+    <p class="privacy">Inviando i tuoi dati accetti la <a href="https://strategieefficaci.com/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a> e di ricevere da Basta Scuse il risultato e gli inviti alle serate via email e WhatsApp.</p>
+  </form>
+</div>
+
+<!-- RISULTATO -->
+<div id="result" style="display:none">
+  <div class="res-card">
+    <div class="res-kicker" id="resHello">Il tuo livello di leadership</div>
+    <div class="res-level" id="resLevel"></div>
+    <div class="res-pct" id="resPct"></div>
+    <p class="res-text" id="resLevelText"></p>
+
+    <div class="bars" id="bars"></div>
+
+    <div class="freno">
+      <div class="freno-kicker">Il tuo freno principale</div>
+      <h3 id="frTitle"></h3>
+      <div class="sub" id="frSub"></div>
+      <p id="frText"></p>
+      <p class="future" id="frFuture"></p>
+    </div>
+
+    <div class="invite">
+      <h3>Questo freno si può togliere.<br>Ma prima devi vedere da dove nasce.</h3>
+      <p>Ti invito a <b style="color:#fff">2 serate gratuite su Zoom</b> con me, Massimiliano Maura:</p>
+      <div class="date"><div class="d">GIO<b>10</b>DIC</div><div class="t"><b>Ore 21:00</b> — Perché la tua attività dipende da te, e quanto ti sta costando davvero.</div></div>
+      <div class="date"><div class="d">VEN<b>11</b>DIC</div><div class="t"><b>Ore 21:00</b> — Cosa cambia quando inizi a guidare in modo diverso.</div></div>
+
+      <div class="bio">
+        <img src="data:image/jpeg;base64,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" alt="Massimiliano Maura" onerror="this.style.display='none'">
+        <p><b style="color:#fff">Chi sono.</b> Sono Massimiliano Maura, imprenditore da oltre 25 anni: dal 2000 guido il mio ristorante in Sardegna insieme al mio team, quindi i problemi di cui parleremo li vivo anch'io ogni giorno. Sono Trainer certificato di PNL (Society of NLP) e Mental Coach, per anni sono stato responsabile di eventi e programmi del dott. Roberto Cerè in Italia e all'estero, e sono autore del bestseller <i>Il miglior te stesso che puoi</i> (Mind Edizioni). Con Basta Scuse non do motivazione usa e getta: do strumenti che cambiano le regole del gioco.</p>
+      </div>
+
+      <p class="cta-note">📅 Segna le due date in agenda adesso.</p>
+      <p class="mail-note">Ti ho mandato il link Zoom via email da <span style="color:#e9b44c">info@bastascuse.it</span> e su WhatsApp. Non trovi la mail? Controlla in Spam o Promozioni.</p>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+// ================= CONFIGURAZIONE =================
+// URL del webhook Make che riceve il contatto (Kartra + WhatsApp). Vuoto = non invia (modalità prova).
+var WEBHOOK_URL = '';
+
+// ================= DOMANDE =================
+// Domanda 0 = qualifica (non dà punti). Poi 8 domande: q = quadrante, p = punti per ogni risposta (0-3).
+var QUALIFICA = {
+  t: 'Quante persone lavorano con te (dipendenti o collaboratori fissi)?',
+  o: ['Nessuna, lavoro da solo', 'Da 1 a 3', 'Da 4 a 10', 'Più di 10'],
+  v: ['team-0', 'team-1-3', 'team-4-10', 'team-10plus']
+};
+var QS = [
+  {q:'PE', t:'In una settimana tipo, quanto del tuo tempo va in cose che potrebbe fare qualcun altro (telefonate, preventivi, piccoli problemi, controllare lavori)?',
+   o:['Circa la metà','Pochissimo: lavoro quasi solo su decisioni, clienti chiave e sviluppo','Più della metà: sono io che mando avanti tutto','Una parte, e so già cosa dovrei delegare'], p:[1,3,0,2]},
+  {q:'RE', t:'Come fanno i tuoi collaboratori a sapere se stanno lavorando bene?',
+   o:['Glielo dico soprattutto quando qualcosa va storto','Parlo spesso con loro, ma più per dare istruzioni che per farli crescere','Ho momenti fissi, anche brevi, per dire cosa va bene e cosa migliorare','Quando ho tempo, senza una regola precisa'], p:[0,2,3,1]},
+  {q:'ST', t:'I tuoi obiettivi per i prossimi 12 mesi sono…',
+   o:['Chiari nella mia testa, ma non scritti','Scritti, con numeri e scadenze, e il team li conosce','Lavorare il più possibile e far quadrare i conti','Scritti con numeri, ma li conosco solo io'], p:[1,3,0,2]},
+  {q:'SI', t:'Se domani dovessi stare via un mese, senza telefono, la tua attività…',
+   o:['Reggerebbe, ma al rientro troverei tante decisioni ferme ad aspettarmi','Si fermerebbe nel giro di pochi giorni','Andrebbe avanti quasi uguale: le persone sanno cosa fare','Andrebbe avanti, ma con errori e clienti scontenti'], p:[2,0,3,1]},
+  {q:'PE', t:'L\'ultima volta che hai dedicato tempo a crescere tu come imprenditore (un corso, un libro, un mentore)?',
+   o:['Più di un anno fa','Lo faccio con regolarità, è in agenda','Non ricordo: non c\'è mai tempo','Negli ultimi mesi, quando capita'], p:[1,3,0,2]},
+  {q:'RE', t:'Due persone del tuo team sono in tensione e il lavoro ne risente. Di solito tu…',
+   o:['Intervieni e decidi tu chi ha ragione','Lasci correre, sperando che si sistemi da sola','Li metti a confronto, li aiuti a trovare un accordo e poi verifichi che regga','Ne parli con ciascuno separatamente'], p:[1,0,3,2]},
+  {q:'ST', t:'Quanto tempo dedichi ogni settimana a pensare al futuro dell\'attività, invece che alle urgenze?',
+   o:['Qualche ora, ma salta spesso','Zero: le emergenze si mangiano tutto','Un momento fisso e protetto, ogni settimana','Ci penso la sera o nel weekend, quando sono già stanco'], p:[2,0,3,1]},
+  {q:'SI', t:'Quando un collaboratore deve prendere una decisione fuori dalla routine…',
+   o:['Alcune persone chiave decidono, le altre chiamano me','Chiama me, sempre','Decide, ma poi spesso devo correggere','Decide da solo, nei limiti che abbiamo stabilito insieme'], p:[2,0,1,3]}
+];
+
+// ================= RISULTATI =================
+var QUADRANTI = {
+  PE: {nome:'Leadership personale', sub:'Come gestisci te stesso', tag:'lc-personale',
+       testo:'Il tuo freno principale sei tu: il tuo tempo e la tua energia. Passi le giornate su cose che potrebbe fare qualcun altro e resta poco spazio per quello che solo tu puoi fare. Il costo? Ogni ora che passi sull\'operativo è un\'ora tolta alla crescita dell\'azienda, e alla tua vita fuori dal lavoro. E un leader stanco guida un team stanco.',
+       futuro:'Se continui con questo modello di leadership, è molto probabile che fra un anno sarai ancora più stanco, con meno tempo per te e per la tua famiglia, e con un\'azienda ferma esattamente dove è oggi.'},
+  RE: {nome:'Leadership relazionale', sub:'Come guidi le persone', tag:'lc-relazionale',
+       testo:'Il tuo freno principale è il rapporto con il team. Le persone non sanno con chiarezza cosa ti aspetti, i riscontri arrivano soprattutto quando qualcosa va storto e le tensioni restano lì. Il costo? Collaboratori che fanno il minimo, errori che si ripetono, persone brave che prima o poi se ne vanno. E tu che pensi "faccio prima a farlo io".',
+       futuro:'Se continui con questo modello di leadership, è molto probabile che fra un anno avrai cambiato qualche collaboratore senza che sia cambiato nulla: stessi errori, stesse tensioni, e ancora più lavoro sulle tue spalle.'},
+  ST: {nome:'Leadership strategica', sub:'Dove porti l\'azienda', tag:'lc-strategica',
+       testo:'Il tuo freno principale è la direzione. Le urgenze si mangiano il tempo che servirebbe per decidere dove vuoi arrivare, e se la meta non è chiara a te, non può esserlo per il tuo team. Il costo? Lavori tanto ma l\'attività gira in tondo: anni che passano uguali, opportunità che vedi ma non riesci a cogliere.',
+       futuro:'Se continui con questo modello di leadership, è molto probabile che fra un anno sarai nello stesso punto di oggi, con gli stessi numeri, guardando i concorrenti cogliere le occasioni che avevi visto prima tu.'},
+  SI: {nome:'Leadership sistemica', sub:'Quanto l\'azienda va avanti senza di te', tag:'lc-sistemica',
+       testo:'Il tuo freno principale è la dipendenza da te. Le decisioni passano tutte da te, le persone non sono messe in condizione di scegliere da sole, e se ti fermi si ferma tutto. Il costo? Non stacchi mai davvero, nemmeno in vacanza, e la tua azienda non può crescere oltre le ore che riesci a lavorare tu.',
+       futuro:'Se continui con questo modello di leadership, è molto probabile che fra un anno sarai ancora l\'unico a reggere tutto: più ore, più stress, e un\'azienda che vale poco senza di te, anche il giorno in cui vorrai cederla o semplicemente rallentare.'}
+};
+var ORDINE_BARRE = ['PE','RE','ST','SI'];
+var PRIORITA_PARITA = ['SI','ST','RE','PE']; // in caso di parità vince il primo
+var LIVELLI = [
+  {max:40, nome:'Il Leader Indispensabile',
+   testo:'Sei il motore di tutto. Senza di te la tua attività rallenta o si ferma, e lo sai bene: lo senti ogni volta che provi a staccare. Questo non vuol dire che lavori male. Vuol dire che oggi la tua azienda è costruita su di te, e la tua energia, il tuo tempo e la tua crescita hanno un limite.'},
+  {max:70, nome:'Il Leader Sovraccarico',
+   testo:'Hai già fatto dei passi importanti: c\'è un team, c\'è qualche regola, qualcosa va avanti anche senza di te. Ma c\'è ancora troppo che passa dalla tua scrivania. Sei a metà strada: abbastanza avanti per vedere come potrebbe essere, non ancora abbastanza per godertelo.'},
+  {max:100, nome:'Il Leader in Costruzione',
+   testo:'Hai basi solide, più di molti imprenditori. Proprio per questo il tuo freno principale pesa di più: è ciò che separa un\'attività che funziona da un\'attività che cresce anche quando tu non ci sei.'}
+];
+
+// ================= LOGICA TEST =================
+var TOTALE_DOMANDE = QS.length + 1;
+var cur = 0, answers = [], RIS = null;
+
+function domanda(i) { return i === 0 ? {t: QUALIFICA.t, o: QUALIFICA.o} : QS[i - 1]; }
+
+function startTest() {
+  document.getElementById('intro').style.display = 'none';
+  document.getElementById('quiz').style.display = 'block';
+  render();
+}
+
+function render() {
+  var d = domanda(cur);
+  document.getElementById('prog').style.width = ((cur / TOTALE_DOMANDE) * 100) + '%';
+  document.getElementById('qcount').textContent = 'Domanda ' + (cur + 1) + ' di ' + TOTALE_DOMANDE;
+  document.getElementById('qtext').textContent = d.t;
+  var oDiv = document.getElementById('opts');
+  oDiv.innerHTML = '';
+  d.o.forEach(function(txt, i) {
+    var el = document.createElement('div');
+    el.className = 'likert-option' + (answers[cur] === i ? ' selected' : '');
+    el.innerHTML = '<div class="likert-circle">' + String.fromCharCode(65 + i) + '</div><div class="likert-label"></div>';
+    el.querySelector('.likert-label').textContent = txt;
+    el.onclick = function() { select(i); };
+    oDiv.appendChild(el);
+  });
+  document.getElementById('btnPrev').disabled = cur === 0;
+  var btn = document.getElementById('btnNext');
+  btn.disabled = answers[cur] === undefined;
+  btn.textContent = cur === TOTALE_DOMANDE - 1 ? 'Vedi risultato >>' : 'Avanti >>';
+}
+
+function select(i) {
+  answers[cur] = i;
+  render();
+  // avanzamento automatico dopo la scelta
+  setTimeout(function() { if (answers[cur] === i) next(); }, 280);
+}
+
+function next() {
+  if (answers[cur] === undefined) return;
+  if (cur === TOTALE_DOMANDE - 1) { mostraForm(); return; }
+  cur++;
+  render();
+}
+
+function prev() { if (cur > 0) { cur--; render(); } }
+
+function calcola(teamIdx, punti) {
+  // punti = {PE:0-6, RE:.., ST:.., SI:..}
+  var tot = punti.PE + punti.RE + punti.ST + punti.SI;
+  var pct = Math.round(tot / 24 * 100);
+  var liv = LIVELLI.filter(function(l) { return pct <= l.max; })[0];
+  var min = Math.min(punti.PE, punti.RE, punti.ST, punti.SI);
+  var freno = PRIORITA_PARITA.filter(function(k) { return punti[k] === min; })[0];
+  return { team: QUALIFICA.v[teamIdx] || '', punti: punti, totale: tot, pct: pct, livello: liv, freno: freno };
+}
+
+function calcolaDaRisposte() {
+  var punti = {PE:0, RE:0, ST:0, SI:0};
+  QS.forEach(function(q, i) { punti[q.q] += q.p[answers[i + 1]]; });
+  return calcola(answers[0], punti);
+}
+
+function mostraForm() {
+  RIS = calcolaDaRisposte();
+  bsSegnaQuizCompletato();
+  document.getElementById('quiz').style.display = 'none';
+  document.getElementById('form').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+function normalizzaTel(t) {
+  var n = (t || '').replace(/[^\d+]/g, '');
+  if (n.indexOf('00') === 0) n = '+' + n.slice(2);
+  if (n.charAt(0) !== '+') n = (n.indexOf('39') === 0 && n.length >= 11 ? '+' : '+39') + n;
+  return n;
+}
+
+function inviaForm(e) {
+  e.preventDefault();
+  var nome = document.getElementById('fNome').value.trim();
+  var email = document.getElementById('fEmail').value.trim();
+  var telRaw = document.getElementById('fTel').value.trim();
+  var tel = normalizzaTel(telRaw);
+  var err = document.getElementById('formErr');
+  var msg = '';
+  if (!nome) msg = 'Scrivi il tuo nome.';
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) msg = 'Controlla l\'email: sembra non corretta.';
+  else if (tel.replace(/\D/g, '').length < 11) msg = 'Controlla il numero WhatsApp.';
+  if (msg) { err.textContent = msg; err.style.display = 'block'; return; }
+  err.style.display = 'none';
+  document.getElementById('btnSubmit').disabled = true;
+
+  var dati = {
+    nome: nome, email: email, whatsapp: tel,
+    team: RIS.team, livello: RIS.livello.nome, percentuale: RIS.pct,
+    freno: QUADRANTI[RIS.freno].nome, freno_tag: QUADRANTI[RIS.freno].tag,
+    pe: RIS.punti.PE, re: RIS.punti.RE, st: RIS.punti.ST, si: RIS.punti.SI,
+    link_risultato: linkRisultato(RIS),
+    pagina: location.href.split('#')[0]
+  };
+  if (WEBHOOK_URL) {
+    try {
+      var body = new URLSearchParams(dati).toString();
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(WEBHOOK_URL, new Blob([body], {type: 'application/x-www-form-urlencoded'}));
+      } else {
+        fetch(WEBHOOK_URL, {method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: body});
+      }
+    } catch (x) {}
+  }
+  bsTrackLead();
+  mostraRisultato(RIS, nome);
+}
+
+function linkRisultato(r) {
+  return location.href.split('?')[0].split('#')[0] + '?r=' + [r.punti.PE, r.punti.RE, r.punti.ST, r.punti.SI].join('');
+}
+
+function mostraRisultato(r, nome) {
+  document.getElementById('resHello').textContent = nome ? nome + ', il tuo livello di leadership' : 'Il tuo livello di leadership';
+  document.getElementById('resLevel').textContent = r.livello.nome;
+  document.getElementById('resPct').textContent = r.pct + '%';
+  document.getElementById('resLevelText').textContent = r.livello.testo;
+  var bars = document.getElementById('bars');
+  bars.innerHTML = '';
+  ORDINE_BARRE.forEach(function(k) {
+    var row = document.createElement('div');
+    row.className = 'bar-row' + (k === r.freno ? ' weak' : '');
+    var w = Math.max(4, Math.round(r.punti[k] / 6 * 100));
+    row.innerHTML = '<div class="bar-label"><b></b><span>' + Math.round(r.punti[k] / 6 * 100) + '%</span></div>' +
+                    '<div class="bar-track"><div class="bar-fill" style="width:' + w + '%"></div></div>';
+    row.querySelector('b').textContent = QUADRANTI[k].nome;
+    bars.appendChild(row);
+  });
+  var f = QUADRANTI[r.freno];
+  document.getElementById('frTitle').textContent = f.nome;
+  document.getElementById('frSub').textContent = f.sub;
+  document.getElementById('frText').textContent = f.testo;
+  document.getElementById('frFuture').textContent = f.futuro;
+  ['intro','quiz','form'].forEach(function(id) { document.getElementById(id).style.display = 'none'; });
+  document.getElementById('result').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+// Apertura diretta del risultato da link (email/WhatsApp): ?r=PERESTSI, es. ?r=2413
+(function daLink() {
+  var p = new URLSearchParams(location.search).get('r') || '';
+  if (/^[0-6]{4}$/.test(p)) {
+    var v = p.split('').map(Number);
+    var r = calcola(-1, {PE: v[0], RE: v[1], ST: v[2], SI: v[3]});
+    var n = new URLSearchParams(location.search).get('n') || '';
+    mostraRisultato(r, n);
+  }
+})();
+</script>
+<div id="bsCookie" class="bs-cookie" role="dialog" aria-label="Consenso cookie">
+  Usiamo cookie tecnici e, solo con il tuo consenso, cookie di marketing (Pixel di Meta) per misurare e migliorare i nostri annunci. <a href="https://strategieefficaci.com/privacy-policy" target="_blank" rel="noopener">Privacy e Cookie Policy</a>
+  <div class="bs-cookie-btns">
+    <button type="button" class="bs-cookie-no" onclick="bsRifiutaCookie()">Rifiuta</button>
+    <button type="button" class="bs-cookie-ok" onclick="bsAccettaCookie()">Accetto</button>
+  </div>
+</div>
+<script>
+function bsAccettaCookie(){ bsSalvaConsenso('accetta'); document.getElementById('bsCookie').style.display='none'; bsCaricaPixel(); }
+function bsRifiutaCookie(){ bsSalvaConsenso('rifiuta'); document.getElementById('bsCookie').style.display='none'; }
+if (!bsLeggiConsenso()) { document.getElementById('bsCookie').style.display='block'; }
+</script>
+
+</body>
+</html>
