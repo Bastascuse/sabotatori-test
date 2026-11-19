@@ -259,14 +259,14 @@ body::before { content: ''; position: fixed; inset: 0; z-index: -1; pointer-even
 <script>
 // ================= CONFIGURAZIONE =================
 // URL del webhook Make che riceve il contatto (Kartra + WhatsApp). Vuoto = non invia (modalità prova).
-var WEBHOOK_URL = '';
+var WEBHOOK_URL = 'https://hook.eu2.make.com/3nfr6potceqsehm79bdz9grstmvv4z8k';
 
 // ================= DOMANDE =================
 // Domanda 0 = qualifica (non dà punti). Poi 8 domande: q = quadrante, p = punti per ogni risposta (0-3).
 var QUALIFICA = {
   t: 'Quante persone lavorano con te (dipendenti o collaboratori fissi)?',
   o: ['Nessuna, lavoro da solo', 'Da 1 a 3', 'Da 4 a 10', 'Più di 10'],
-  v: ['team-0', 'team-1-3', 'team-4-10', 'team-10plus']
+  v: ['BS Team nessuno', 'BS Team da 1 a 3', 'BS Team da 4 a 10', 'BS Team oltre 10']
 };
 var QS = [
   {q:'PE', t:'In una settimana tipo, quanto del tuo tempo va in cose che potrebbe fare qualcun altro (telefonate, preventivi, piccoli problemi, controllare lavori)?',
@@ -289,16 +289,16 @@ var QS = [
 
 // ================= RISULTATI =================
 var QUADRANTI = {
-  PE: {nome:'Leadership personale', sub:'Come gestisci te stesso', tag:'lc-personale',
+  PE: {nome:'Leadership personale', sub:'Come gestisci te stesso', tag:'BS Freno personale',
        testo:'Il tuo freno principale sei tu: il tuo tempo e la tua energia. Passi le giornate su cose che potrebbe fare qualcun altro e resta poco spazio per quello che solo tu puoi fare. Il costo? Ogni ora che passi sull\'operativo è un\'ora tolta alla crescita dell\'azienda, e alla tua vita fuori dal lavoro. E un leader stanco guida un team stanco.',
        futuro:'Se continui con questo modello di leadership, è molto probabile che fra un anno sarai ancora più stanco, con meno tempo per te e per la tua famiglia, e con un\'azienda ferma esattamente dove è oggi.'},
-  RE: {nome:'Leadership relazionale', sub:'Come guidi le persone', tag:'lc-relazionale',
+  RE: {nome:'Leadership relazionale', sub:'Come guidi le persone', tag:'BS Freno relazionale',
        testo:'Il tuo freno principale è il rapporto con il team. Le persone non sanno con chiarezza cosa ti aspetti, i riscontri arrivano soprattutto quando qualcosa va storto e le tensioni restano lì. Il costo? Collaboratori che fanno il minimo, errori che si ripetono, persone brave che prima o poi se ne vanno. E tu che pensi "faccio prima a farlo io".',
        futuro:'Se continui con questo modello di leadership, è molto probabile che fra un anno avrai cambiato qualche collaboratore senza che sia cambiato nulla: stessi errori, stesse tensioni, e ancora più lavoro sulle tue spalle.'},
-  ST: {nome:'Leadership strategica', sub:'Dove porti l\'azienda', tag:'lc-strategica',
+  ST: {nome:'Leadership strategica', sub:'Dove porti l\'azienda', tag:'BS Freno strategica',
        testo:'Il tuo freno principale è la direzione. Le urgenze si mangiano il tempo che servirebbe per decidere dove vuoi arrivare, e se la meta non è chiara a te, non può esserlo per il tuo team. Il costo? Lavori tanto ma l\'attività gira in tondo: anni che passano uguali, opportunità che vedi ma non riesci a cogliere.',
        futuro:'Se continui con questo modello di leadership, è molto probabile che fra un anno sarai nello stesso punto di oggi, con gli stessi numeri, guardando i concorrenti cogliere le occasioni che avevi visto prima tu.'},
-  SI: {nome:'Leadership sistemica', sub:'Quanto l\'azienda va avanti senza di te', tag:'lc-sistemica',
+  SI: {nome:'Leadership sistemica', sub:'Quanto l\'azienda va avanti senza di te', tag:'BS Freno sistemica',
        testo:'Il tuo freno principale è la dipendenza da te. Le decisioni passano tutte da te, le persone non sono messe in condizione di scegliere da sole, e se ti fermi si ferma tutto. Il costo? Non stacchi mai davvero, nemmeno in vacanza, e la tua azienda non può crescere oltre le ore che riesci a lavorare tu.',
        futuro:'Se continui con questo modello di leadership, è molto probabile che fra un anno sarai ancora l\'unico a reggere tutto: più ore, più stress, e un\'azienda che vale poco senza di te, anche il giorno in cui vorrai cederla o semplicemente rallentare.'}
 };
@@ -409,7 +409,7 @@ function inviaForm(e) {
   document.getElementById('btnSubmit').disabled = true;
 
   var dati = {
-    nome: nome, email: email, whatsapp: tel,
+    nome: nome, email: email, whatsapp: tel.replace(/\D/g, ''),
     team: RIS.team, livello: RIS.livello.nome, percentuale: RIS.pct,
     freno: QUADRANTI[RIS.freno].nome, freno_tag: QUADRANTI[RIS.freno].tag,
     pe: RIS.punti.PE, re: RIS.punti.RE, st: RIS.punti.ST, si: RIS.punti.SI,
