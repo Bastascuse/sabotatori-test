@@ -421,7 +421,9 @@ function inviaForm(e) {
     freno: QUADRANTI[RIS.freno].nome, freno_tag: QUADRANTI[RIS.freno].tag,
     pe: RIS.punti.PE, re: RIS.punti.RE, st: RIS.punti.ST, si: RIS.punti.SI,
     link_risultato: linkRisultato(RIS),
-    pagina: location.href.split('#')[0]
+    pagina: location.href.split('#')[0],
+    event_id: 'lead-' + (bsLeggiTs(BS_QUIZ_KEY) || Date.now()),
+    ua: navigator.userAgent
   };
   if (WEBHOOK_URL) {
     try {
